@@ -1,28 +1,41 @@
 import { TicketCreatedPublisher } from "./../events/publishers/ticketCreatedPublisher";
 import { TicketUpdatedPublisher } from "../events/publishers/ticketUpdatedPublisher";
+
 import { AppError, catchAsync } from "@bilal009/common";
-import ticketModel from "../models/ticket";
+import Ticket from "../models/ticket";
 import { natsWrapper } from "../nats-wrapper";
+import mongoose from "mongoose"
+
 
 
 export const createTicket = catchAsync(
   async (req: any, res: any, next: any) => {
+    const session = await mongoose.startSession()
+
     if (!req.currentUser) {
       return next(
         new AppError("You must be logged in to create a ticket", 401)
       );
     }
-    const ticket = await ticketModel.createDocument(req.body);
+
+    // After saving ticket in database error may occur in publishing event to nats, so creating transaction
+    session.startTransaction()
+
+    const ticket = Ticket.createDocument({...req.body,userId:req.currentUser.id});
     await ticket.save();
 
     // Publishing event to nats
     await new TicketCreatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
-      title: ticket.name,
+      name: ticket.name,
       price: ticket.price,
-      userId: String(ticket.userId),
+      userId: ticket.userId,
+      status:ticket.status
     });
 
+    session.commitTransaction()
+    session.endSession()
+    
     res.status(201).json({
       status: "success",
       data: ticket,
@@ -31,7 +44,7 @@ export const createTicket = catchAsync(
 );
 
 export const getAllTickets = catchAsync(async (req: any, res: any) => {
-  const tickets = await ticketModel.find();
+  const tickets = await Ticket.find();
   res.status(200).json({
     status: "success",
     data: tickets,
@@ -39,7 +52,7 @@ export const getAllTickets = catchAsync(async (req: any, res: any) => {
 });
 
 export const getTicket = catchAsync(async (req: any, res: any, next: any) => {
-  const ticket = await ticketModel.findById(req.params.id);
+  const ticket = await Ticket.findById(req.params.id);
   if (!ticket) {
     return next(new AppError("Ticket not found", 404));
   }
@@ -51,7 +64,7 @@ export const getTicket = catchAsync(async (req: any, res: any, next: any) => {
 
 export const updateTicket = catchAsync(
   async (req: any, res: any, next: any) => {
-    let ticket = await ticketModel.findById(req.params.id);
+    let ticket = await Ticket.findById(req.params.id);
     if (!ticket) {
       return next(new AppError("Ticket not found", 404));
     }
@@ -65,9 +78,10 @@ export const updateTicket = catchAsync(
     // Publishing event to nats
     await new TicketUpdatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
-      title: ticket.name,
+      name: ticket.name,
       price: ticket.price,
-      userId: String(ticket.userId),
+      userId: ticket.userId,
+      status:ticket.status
     });
 
     res.status(200).json({
@@ -79,7 +93,7 @@ export const updateTicket = catchAsync(
 
 export const deleteTicket = catchAsync(
   async (req: any, res: any, next: any) => {
-    const ticket = await ticketModel.findById(req.params.id);
+    const ticket = await Ticket.findById(req.params.id);
     if (!ticket) {
       return next(new AppError("Ticket not found", 404));
     }
@@ -87,7 +101,7 @@ export const deleteTicket = catchAsync(
       return next(new AppError("You can't delete this ticket", 403));
     }
     
-    await ticketModel.findByIdAndDelete(req.params.id);
+    await Ticket.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
       status: "success",

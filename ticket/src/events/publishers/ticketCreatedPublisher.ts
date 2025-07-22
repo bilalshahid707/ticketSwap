@@ -1,12 +1,14 @@
 import {Publisher,Subjects} from "@bilal009/common"
+import { ObjectId } from "mongoose"
 
 interface TicketCreatedEvent {
     subject:Subjects.TicketCreated,
     data:{
         id:string,
-        title:string,
+        name:string,
         price:number,
-        userId:string
+        userId:ObjectId,
+        status:string
     }
 }
 
