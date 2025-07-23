@@ -31,7 +31,7 @@ declare global {
 
 global.signin = async () => {
   const jwtPayload = {
-    id: "testId",
+    id: new mongoose.Types.ObjectId(),
     name: "testName",
     email: "test@test.com"
   }

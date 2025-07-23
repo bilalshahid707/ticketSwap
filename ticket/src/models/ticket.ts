@@ -3,15 +3,15 @@ import mongoose from "mongoose";
 interface ticketType {
   name: string;
   price: number;
-  userId: mongoose.Schema.Types.ObjectId;
-  status: string;
+  userId: mongoose.Types.ObjectId;
+  status?: string;
 }
 
 interface ticketDocument extends mongoose.Document {
   name: string;
   price: number;
-  userId: mongoose.Schema.Types.ObjectId;
-  status: string;
+  userId: mongoose.Types.ObjectId;
+  status?: string;
 }
 
 interface ticketModel extends mongoose.Model<ticketDocument> {
@@ -25,7 +25,7 @@ const ticketSchema = new mongoose.Schema<ticketDocument>(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
-      // required: true,
+      required: true,
     },
     status: { type: String, default: "available" },
   },

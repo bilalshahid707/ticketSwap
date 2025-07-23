@@ -1,5 +1,6 @@
 import {Publisher,Subjects} from "@bilal009/common"
 import { ObjectId } from "mongoose"
+import mongoose from "mongoose"
 
 interface TicketCreatedEvent {
     subject:Subjects.TicketCreated,
@@ -7,8 +8,8 @@ interface TicketCreatedEvent {
         id:string,
         name:string,
         price:number,
-        userId:ObjectId,
-        status:string
+        userId:mongoose.Types.ObjectId,
+        status?:string
     }
 }
 

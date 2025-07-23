@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import {natsWrapper} from "./nats-wrapper";
 
 try{
-  // natsWrapper.connect('ticketing','ticket-publisher-1',"http://nats-service:4222")
+  natsWrapper.connect('ticketing','ticket-publisher-1',"http://nats-service:4222")
   mongoose.connect('mongodb://ticket-mongo-service:27017/ticket').then(()=>{
     console.log("db connection successful")
   })
