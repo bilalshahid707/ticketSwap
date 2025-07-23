@@ -5,6 +5,7 @@ interface ticketType {
   price: number;
   userId: mongoose.Schema.Types.ObjectId;
   status: string;
+//   version:Number
 }
 
 interface ticketDocument extends mongoose.Document {
@@ -12,6 +13,7 @@ interface ticketDocument extends mongoose.Document {
   price: number;
   userId: mongoose.Schema.Types.ObjectId;
   status: string;
+//   version:Number
 }
 
 interface ticketModel extends mongoose.Model<ticketDocument> {
@@ -25,9 +27,13 @@ const ticketSchema = new mongoose.Schema<ticketDocument>(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
-      // required: true,
+      required: true,
     },
     status: { type: String, default: "available" },
+    // version:{
+    //     type:Number,
+    //     default:0
+    // }
   },
   {
     toJSON: { virtuals: true },

@@ -1,9 +1,8 @@
 import express from "express";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-
-import authRouter from "./routes/authRoutes";
-import { errorHandler } from "@bilal009/common";
+import {errorHandler} from "@bilal009/common"
+import cookieParser from 'cookie-parser';
+import Router from "./routes/orderRoutes"
+const cors = require('cors')
 export const app = express();
 
 // Body Parser Middleware
@@ -14,7 +13,7 @@ app.use(cors({
 }))
 
 // Routes
-app.use("/api/v1/users",authRouter);
+app.use("/api/v1/orders",Router);
 app.use (errorHandler);
 
 export default app

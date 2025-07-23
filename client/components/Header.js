@@ -11,6 +11,7 @@ export const Header = () => {
         Store.dispatch({ type: "User/setUser", payload: null });
     }
   };
+  
   return (
     <div
       className="relative flex size-full max-h-fit flex-col bg-white group/design-root overflow-x-hidden"
