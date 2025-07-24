@@ -1,19 +1,18 @@
 import mongoose from "mongoose";
 
 interface ticketType {
+  // Additional _id field to replicate the ticket with same Id as original
+  _id:string
   name: string;
   price: number;
-  userId: mongoose.Schema.Types.ObjectId;
-  status: string;
-//   version:Number
+  userId: string;
 }
 
 interface ticketDocument extends mongoose.Document {
   name: string;
   price: number;
-  userId: mongoose.Schema.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   status: string;
-//   version:Number
 }
 
 interface ticketModel extends mongoose.Model<ticketDocument> {
@@ -29,11 +28,7 @@ const ticketSchema = new mongoose.Schema<ticketDocument>(
       ref: "users",
       required: true,
     },
-    status: { type: String, default: "available" },
-    // version:{
-    //     type:Number,
-    //     default:0
-    // }
+    status: { type: String, default: "available" ,enum:["available","reserved","sold"]}
   },
   {
     toJSON: { virtuals: true },

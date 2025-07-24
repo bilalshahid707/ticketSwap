@@ -21,7 +21,7 @@ export const createTicket = catchAsync(
       id: ticket.id,
       name: ticket.name,
       price: ticket.price,
-      userId: ticket.userId,
+      userId: ticket.userId.toString(),
       status: ticket.status,
     });
 
@@ -70,7 +70,7 @@ export const updateTicket = catchAsync(
       id: ticket.id,
       name: ticket.name,
       price: ticket.price,
-      userId: ticket.userId,
+      userId: ticket.userId.toString(),
       status: ticket.status,
     });
 

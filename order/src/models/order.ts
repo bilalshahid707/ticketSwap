@@ -11,10 +11,10 @@ interface OrderType{
 
 interface OrderDocument extends mongoose.Document{
     id:string,
-    ticketId:string,
+    ticketId:mongoose.Types.ObjectId,
     ticketName:string,
     status:string,
-    userId:string,
+    userId:mongoose.Types.ObjectId,
     expiresIn:Date
 }
 
@@ -23,9 +23,10 @@ interface OrderModel extends mongoose.Model<OrderDocument>{
 }
 
 const orderSchema = new mongoose.Schema({
-    ticketId:{
-        type:String,
-        required:[true,"Please provide ticket id to process"]
+    ticketId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "tickets",
+      required: true,
     },
     ticketName:{
         type:String,
@@ -33,10 +34,13 @@ const orderSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        default:'pending'
+        default:'pending',
+        enum:["pending","completed"]
     },
-    userId:{
-        type:String,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
     },
     expiresIn:{
         type:Date,

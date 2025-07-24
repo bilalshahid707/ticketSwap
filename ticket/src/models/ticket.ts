@@ -3,15 +3,14 @@ import mongoose from "mongoose";
 interface ticketType {
   name: string;
   price: number;
-  userId: mongoose.Types.ObjectId;
-  status?: string;
+  userId: string;
 }
 
 interface ticketDocument extends mongoose.Document {
   name: string;
   price: number;
   userId: mongoose.Types.ObjectId;
-  status?: string;
+  status: string;
 }
 
 interface ticketModel extends mongoose.Model<ticketDocument> {
@@ -27,7 +26,7 @@ const ticketSchema = new mongoose.Schema<ticketDocument>(
       ref: "users",
       required: true,
     },
-    status: { type: String, default: "available" },
+    status: { type: String, default: "available" ,enum:["available","reserved","sold"]}
   },
   {
     toJSON: { virtuals: true },
