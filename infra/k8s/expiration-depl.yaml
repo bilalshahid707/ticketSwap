@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment  
+metadata:
+  name: expiration-deployment 
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: expiration
+  template:
+    metadata:
+      labels:
+        app: expiration
+    spec:
+      containers: 
+        - name: expiration
+          image: bilal157/expiration:latest
+

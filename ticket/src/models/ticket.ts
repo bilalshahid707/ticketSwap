@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { TicketStatus } from "@bilal009/common";
 interface ticketType {
   name: string;
   price: number;
@@ -26,7 +26,7 @@ const ticketSchema = new mongoose.Schema<ticketDocument>(
       ref: "users",
       required: true,
     },
-    status: { type: String, default: "available" ,enum:["available","reserved","sold"]}
+    status: { type: String, default: TicketStatus.Available ,enum:[TicketStatus.Available,TicketStatus.Reserved,TicketStatus.Sold]}
   },
   {
     toJSON: { virtuals: true },

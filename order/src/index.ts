@@ -5,7 +5,7 @@ import { natsWrapper } from "./nats-wrapper";
 import { TicketCreatedListener } from "./events/listeners/ticketCreatedListener";
 import { TicketDeletedListener } from './events/listeners/ticketDeletedListener';
 import { TicketUpdatedListener } from './events/listeners/ticketUpdatedListener';
-
+import { ExpirationCompletedListener } from "./events/listeners/expirationCompletedListener"
 
 const start = async () => {
   try {
@@ -30,6 +30,7 @@ const start = async () => {
     new TicketCreatedListener(natsWrapper.client).subscribe();
     new TicketUpdatedListener(natsWrapper.client).subscribe();
     new TicketDeletedListener(natsWrapper.client).subscribe();
+    new ExpirationCompletedListener(natsWrapper.client).subscribe();
 
     app.listen(3000, () => {
       console.log("Server is running on port 3000!!");

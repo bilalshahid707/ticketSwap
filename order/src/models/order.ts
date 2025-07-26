@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { OrderStatus } from "@bilal009/common";
 interface OrderType{
     id:string,
     ticketId:string,
@@ -34,8 +34,8 @@ const orderSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        default:'pending',
-        enum:["pending","completed"]
+        default:OrderStatus.Pending,
+        enum:[OrderStatus.Pending,OrderStatus.Completed,OrderStatus.Cancelled]
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,

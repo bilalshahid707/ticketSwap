@@ -8,6 +8,7 @@ build:
   local:
     push: false
   artifacts:
+
     - image: bilal157/auth
       context: auth
       docker:
@@ -37,6 +38,15 @@ build:
     
     - image: bilal157/order
       context: order
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+    
+    - image: bilal157/expiration
+      context: expiration
       docker:
         dockerfile: Dockerfile
       sync:

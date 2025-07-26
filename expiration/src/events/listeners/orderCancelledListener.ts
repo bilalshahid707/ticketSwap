@@ -1,20 +1,13 @@
-import {Listener,Subjects,AppError,OrderCancelledEvent,TicketStatus} from "@bilal009/common"
+import {Listener,Subjects,AppError,OrderCancelledEvent} from "@bilal009/common"
 import { Message } from "node-nats-streaming"
 import { queueGroupName } from "./queue-group-name"
-import Ticket from "../../models/ticket"
+import { expirationQueue } from "../../queues/expiration-queue";
 
 export class OrderCancelledListener extends Listener<OrderCancelledEvent>{
     subject: Subjects.OrderCancelled = Subjects.OrderCancelled
     queueGroup: string = queueGroupName
 
     async onMessage(data:OrderCancelledEvent['data'], msg: Message): Promise<void> {
-        const ticket = await Ticket.findByIdAndUpdate(data.ticketId,{status:TicketStatus.Available})
-
-        if (!ticket){
-            throw new AppError("no ticket found",404)
-        }
-
-        console.log("ticket:updated")
         msg.ack()
     }
 }

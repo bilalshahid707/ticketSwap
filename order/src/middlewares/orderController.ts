@@ -1,5 +1,5 @@
 import Order from "../models/order"
-import { catchAsync,AppError } from "@bilal009/common"
+import { catchAsync,AppError,OrderStatus,TicketStatus} from "@bilal009/common"
 import {OrderCreatedPublisher} from "../events/publishers/orderCreatedPublisher"
 import { OrderCancelledPublisher } from './../events/publishers/orderCancelledPublisher';
 import { natsWrapper } from "../nats-wrapper"
@@ -12,14 +12,14 @@ export const createOrder= catchAsync(async(req:any,res:any,next:any)=>{
     if (!ticket){
         return next(new AppError("No ticket found",404))
     }
-    if (ticket.status==="reserved"){
+    if (ticket.status===TicketStatus.Reserved){
         return next(new AppError("Ticket is already reserved",400))
     }
 
     // 2) Creating order and set ticket to reserve
     const order = Order.createDocument({...req.body,userId:req.currentUser.id})
     await order.save()
-    ticket.set({status:'reserved'})
+    ticket.set({status:TicketStatus.Reserved})
     await ticket.save()
 
     // 3) Publishing order created event
@@ -29,7 +29,8 @@ export const createOrder= catchAsync(async(req:any,res:any,next:any)=>{
         ticketName:order.ticketName,
         userId:order.userId.toString(),
         ticketPrice:ticket.price,
-        status:ticket.status
+        status:ticket.status,
+        expiresIn:order.expiresIn
     })
 
     res.status(201).json({
@@ -68,10 +69,11 @@ export const deleteOrder = catchAsync(async(req:any,res:any,next:any)=>{
     if (order?.userId.toString() !== req.currentUser.id) {
         return next (new AppError("Unauthorized",403))
     }
-    await Order.findByIdAndDelete(req.params.id)
+    order.set({status:OrderStatus.Cancelled})
+    await order.save()
 
     // 2) Updating ticket back to available
-    const ticket = await Ticket.findByIdAndUpdate(order.ticketId,{status:"available"},{
+    const ticket = await Ticket.findByIdAndUpdate(order.ticketId,{status:TicketStatus.Available},{
         runValidators:true,
         new:true
     })
